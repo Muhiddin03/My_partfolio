@@ -1,0 +1,6 @@
+{
+  "name": "Shaxsiy Portfolio va Admin Panel",
+  "description": "Shaxsiy ma'lumotlar, loyihalar va ko'nikmalarni boshqarish uchun admin panelga ega zamonaviy portfolio websayti.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
