@@ -718,8 +718,16 @@ export default function AdminPanel({
                         <div className="flex items-center gap-2">
                           <img src={profileForm.avatarUrl} className="w-8 h-8 rounded-full object-cover border border-[#E5DEC9]" alt="" />
                           <span className="text-[10px] font-mono text-brand-muted truncate max-w-[120px]">
-                            {profileForm.avatarUrl.split("/").pop()}
+                            Yuklangan rasm
                           </span>
+                          <button
+                            onClick={() => setProfileForm((prev) => ({ ...prev, avatarUrl: "" }))}
+                            type="button"
+                            className="p-1.5 rounded-lg bg-brand-red/10 text-brand-red hover:bg-brand-red hover:text-white transition-colors ml-2"
+                            title="Rasmni o'chirish"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       )}
                     </div>
