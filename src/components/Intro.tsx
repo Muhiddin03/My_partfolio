@@ -100,17 +100,24 @@ export default function Intro({ profile, onComplete }: IntroProps) {
             variants={nameContainer}
             initial="hidden"
             animate="visible"
-            className="text-4xl sm:text-5xl md:text-7xl font-black text-white tracking-tighter flex justify-center flex-wrap drop-shadow-xl px-4"
+            className="text-[clamp(2rem,7vw,4.5rem)] md:text-7xl font-black text-white tracking-tighter text-center drop-shadow-xl px-4 leading-tight"
           >
-            {letters.map((char, index) => (
-              <motion.span key={index} variants={letterAnim} className={char === " " ? "w-3 md:w-4" : ""}>
-                {char}
-              </motion.span>
+            {name.split(" ").map((word, wordIndex) => (
+              <span key={wordIndex} className="inline-block whitespace-nowrap">
+                {Array.from(word).map((char, charIndex) => (
+                  <motion.span key={charIndex} variants={letterAnim} className="inline-block">
+                    {char}
+                  </motion.span>
+                ))}
+                {wordIndex !== name.split(" ").length - 1 && (
+                  <span className="inline-block w-3 md:w-4">&nbsp;</span>
+                )}
+              </span>
             ))}
             <motion.span
               animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 0.8, repeat: Infinity }}
-              className="text-brand-primary ml-1 md:ml-2 font-light"
+              className="inline-block text-brand-primary ml-1 md:ml-2 font-light"
             >
               |
             </motion.span>
