@@ -17,6 +17,7 @@ import {
   markMessageAsRead,
   deleteMessage,
   uploadFile,
+  changePassword,
 } from "../lib/api";
 import {
   Lock,
@@ -50,6 +51,7 @@ interface AdminPanelProps {
   setIsLoggedIn: (loggedIn: boolean) => void;
   token: string;
   setToken: (token: string) => void;
+  onClose: () => void;
 }
 
 type Tab =
@@ -60,7 +62,8 @@ type Tab =
   | "education"
   | "projects"
   | "achievements"
-  | "messages";
+  | "messages"
+  | "settings";
 
 export default function AdminPanel({
   portfolioData,
@@ -69,12 +72,14 @@ export default function AdminPanel({
   setIsLoggedIn,
   token,
   setToken,
+  onClose,
 }: AdminPanelProps) {
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
 
   // Messages State
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -181,6 +186,24 @@ export default function AdminPanel({
   const handleLogout = () => {
     setIsLoggedIn(false);
     setToken("");
+    onClose();
+  };
+
+  const handleUpdatePassword = async () => {
+    try {
+      if (newPassword.length < 3) throw new Error("Parol kamida 3ta belgidan iborat bo'lishi kerak!");
+      setIsSaving(true);
+      await changePassword(newPassword, token);
+      setSuccess("Parol muvaffaqiyatli o'zgartirildi!");
+      setToken(newPassword);
+      setNewPassword("");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err: any) {
+      setError(err.message || "Xatolik yuz berdi");
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Generic file uploader handler
@@ -527,12 +550,6 @@ export default function AdminPanel({
               Kirish
             </button>
           </form>
-
-          <div className="text-center pt-2 border-t border-[#E5DEC9]">
-            <p className="text-[10px] text-brand-muted uppercase tracking-widest font-semibold">
-              Standart parol: <span className="font-mono bg-brand-bg border border-[#E5DEC9] px-2 py-1 rounded-lg text-brand-primary ml-1 font-bold">admin123</span>
-            </p>
-          </div>
         </motion.div>
       </div>
     );
@@ -596,6 +613,7 @@ export default function AdminPanel({
               { id: "projects", label: "Loyihalar", icon: <FileText className="w-3.5 h-3.5" /> },
               { id: "achievements", label: "Yutuqlar", icon: <Award className="w-3.5 h-3.5" /> },
               { id: "messages", label: `Xabarlar (${messages.filter((m) => !m.read).length})`, icon: <Mail className="w-3.5 h-3.5" /> },
+              { id: "settings", label: "Sozlamalar", icon: <Settings className="w-3.5 h-3.5" /> },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1684,6 +1702,36 @@ export default function AdminPanel({
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="space-y-6">
+                <div className="border-b border-[#E5DEC9] pb-4">
+                  <h2 className="text-lg font-serif font-bold text-brand-text font-bold">Xavfsizlik Sozlamalari</h2>
+                  <p className="text-xs text-brand-muted mt-0.5">Admin panelga kirish parolini yangilash.</p>
+                </div>
+                <div className="bg-white p-5 rounded-xl border border-[#E5DEC9] shadow-xs space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-brand-text uppercase tracking-wider mb-1.5 opacity-80">Yangi Parol</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Yangi parolni kiriting..."
+                      className="w-full bg-brand-bg/50 border border-[#E5DEC9] rounded-lg px-3.5 py-2.5 text-sm text-brand-text focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/50 transition-all font-mono"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      onClick={handleUpdatePassword}
+                      disabled={isSaving || newPassword.length < 3}
+                      className="px-6 py-2.5 rounded-lg bg-brand-primary text-white text-xs uppercase tracking-wider font-bold shadow-md hover:bg-brand-primary/90 transition-all hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSaving ? "Saqlanmoqda..." : "Parolni Yangilash"}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 

@@ -176,6 +176,7 @@ export default function App() {
                 setIsLoggedIn={setIsLoggedIn}
                 token={token}
                 setToken={setToken}
+                onClose={() => setIsAdminOpen(false)}
               />
             </div>
           </motion.div>

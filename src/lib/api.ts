@@ -101,33 +101,23 @@ export async function uploadFile(
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = async () => {
-      try {
-        const base64Data = reader.result as string;
-        const res = await fetch(`${API_URL}/api/upload`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            fileName: file.name,
-            fileType: file.type,
-            base64Data,
-          }),
-        });
-
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({ error: "Nomalum xatolik" }));
-          throw new Error(err.error || "Fayl yuklashda xatolik.");
-        }
-
-        const data = await res.json();
-        resolve(data);
-      } catch (err) {
-        reject(err);
-      }
+    reader.onload = () => {
+      resolve({ url: reader.result as string });
     };
-    reader.onerror = (error) => reject(error);
+    reader.onerror = (error) => {
+      reject(error);
+    };
   });
+}
+
+export async function changePassword(newPassword: string, token: string): Promise<void> {
+  const res = await fetch("${API_URL}/api/settings/password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer ${token}" },
+    body: JSON.stringify({ newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Xatolik" }));
+    throw new Error(err.error || "Parolni o'zgartirib bo'lmadi");
+  }
 }
